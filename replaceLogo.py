@@ -46,6 +46,22 @@ soup_object = bsoup(file_data)
 
 org_encoding = soup_object.original_encoding
 
+def replace_tag_value(desired_tag, search_string=None, value=None, new_data=None, action=None):
+    """Replaces the string of the ??? on the first matching tag found.
+    Provide the tag, match string, valueName and replacement string"""
+    search_result = soup_object.find(desired_tag, search_string)
+
+    if desired_tag == None:
+        print 'Did not find a %s class. Please check your source.' % search_string
+        exit(99)
+
+    if value != None:
+        tag_to_edit = search_result.contents[0]
+        tag_to_edit[value] = new_data
+    
+replace_tag_value('div', 'ReportLogo', 'src', abs_path(company_logo_loc))
+
+'''
 desired_tag = soup_object.find('div', search_string)
 
 if desired_tag == None:
@@ -55,6 +71,7 @@ if desired_tag == None:
 tag_to_edit = desired_tag.contents[0]
 
 tag_to_edit['src'] = abs_path(company_logo_loc)
+'''
 
 edited_data = soup_object.prettify(org_encoding)
 
