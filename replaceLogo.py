@@ -10,6 +10,8 @@ from bs4 import BeautifulSoup as bsoup
 from sys import argv
 import os.path 
 
+print "\n\n*************"
+
 search_string = 'ReportLogo'
 
 if len(argv) > 3:
@@ -19,7 +21,8 @@ if len(argv) > 3:
 script_loc = os.path.abspath(argv[0])
 script_dir = os.path.dirname(script_loc)
 
-company_logo_loc = os.path.join(script_dir, 'data/uiTechLogo.gif')
+company_logo_loc = os.path.abspath(os.path.join(script_dir, 'data/uiTechLogo.gif'))
+
 try:
     input_file_loc = argv[1]
     
@@ -45,21 +48,16 @@ with open(input_file_loc) as f:
 soup_object = bsoup(file_data)
 
 org_encoding = soup_object.original_encoding
+   
+def replace_attr_value(target_attr, attr_val_old, attr_val_new):
+    """Takes target_attribute, search_value, and replace_value to find only first matching attribute='value' pair and replace with replace_value."""
+    attr_dict = {'%s' % target_attr: '%s' % attr_val_old}
+    print attr_dict
+    tag = soup_object.find(attrs=attr_dict)
+    tag[target_attr] = attr_val_new
+    print tag
 
-def replace_tag_value(desired_tag, search_string=None, value=None, new_data=None, action=None):
-    """Replaces the string of the ??? on the first matching tag found.
-    Provide the tag, match string, valueName and replacement string"""
-    search_result = soup_object.find(desired_tag, search_string)
-
-    if desired_tag == None:
-        print 'Did not find a %s class. Please check your source.' % search_string
-        exit(99)
-
-    if value != None:
-        tag_to_edit = search_result.contents[0]
-        tag_to_edit[value] = new_data
-    
-replace_tag_value('div', 'ReportLogo', 'src', abs_path(company_logo_loc))
+replace_attr_value('src', 'https://dashboard.systemmonitor.us/customisation/reseller/0/icon.gif', company_logo_loc)
 
 '''
 desired_tag = soup_object.find('div', search_string)
@@ -80,4 +78,4 @@ def writeAllFiles():
         f.write(edited_data)
         f.close()
 
-writeAllFiles()
+#writeAllFiles()
