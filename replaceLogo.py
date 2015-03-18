@@ -8,7 +8,7 @@
 
 from bs4 import BeautifulSoup as bsoup
 from sys import argv
-import os.path 
+import os.path, re
 
 print "\n\n*************"
 
@@ -57,9 +57,42 @@ def replace_attr_value(target_attr, attr_val_old, attr_val_new):
     tag[target_attr] = attr_val_new
     print tag
 
+def strip_attr_line(target_attr, attr_val):
+    """Take target_attribute and target_value and destroy all matching (case-insensitive). Warning: Deletes matches regardless of tag. Also deletes match children."""
+    re_obj = re.compile(attr_val, re.I)
+    attr_dict = {'%s' % target_attr: re_obj}
+    tags = soup_object.find_all(attrs=attr_dict)
+    print 'Removing: %d' % len(tags)
+    for item in tags:
+        print item
+        item.decompose()
+
+def strip_tags(target_tag, target_attr=None):
+    tags = soup_object.find_all(target_tag)
+    print 'Processing: %d' % len(tags)
+    for item in tags:
+       
+        if item.b:
+            print 'NOT removing: ', item
+        else:
+            print 'Removing: ', item
+            print 'Removing contents:', item.contents
+            item.decompose()
+
+print '# replace header logo'
 replace_attr_value('src', 'https://dashboard.systemmonitor.us/customisation/reseller/0/icon.gif', company_logo_loc)
 
-'''
+print '# remove external link images'
+strip_attr_line('src', 'external-link')
+
+print '# remove footer tag line'
+strip_attr_line('class', 'ReportFooter')
+
+print '# remove links'
+strip_tags('a')
+
+# legacy code before replace_attr_value with subtly different functionality
+"""
 desired_tag = soup_object.find('div', search_string)
 
 if desired_tag == None:
@@ -69,7 +102,7 @@ if desired_tag == None:
 tag_to_edit = desired_tag.contents[0]
 
 tag_to_edit['src'] = abs_path(company_logo_loc)
-'''
+"""
 
 edited_data = soup_object.prettify(org_encoding)
 
@@ -78,4 +111,4 @@ def writeAllFiles():
         f.write(edited_data)
         f.close()
 
-#writeAllFiles()
+writeAllFiles()
