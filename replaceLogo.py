@@ -156,6 +156,7 @@ def main(argv):
         output_file_loc = path.join(script_dir, argv[2])
     except IndexError:
         output_file_loc = input_file_loc
+
         print '\nNo output file specified on CLI. Using default.\nOutput file will be %s\n' % output_file_loc
 
     def abs_path(rel_path):
