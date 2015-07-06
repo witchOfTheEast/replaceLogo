@@ -118,7 +118,14 @@ def digest_soup(soup_object):
     print 'Processing:'
     
     print '\n# replace header logo'
-    replace_attr_value(soup_object, 'src', 'https://dashboard.systemmonitor.us/customisation/reseller/0/icon.gif', company_logo_loc)
+    # replace_attr_value depends on the attr value not changing and fails if it does. 
+    div_list = soup_object.find_all('div')
+    for i in div_list:
+        val = i['class']
+        if val[0] == 'ReportLogo':
+            des_tag = i
+            des_tag.img['src'] = company_logo_loc 
+            break
     
     print '\n# replace imcomplete image links'
     replace_attr_value(soup_object, 'src', 'images/silk/', 'https://dashboard.systemmonitor.us/images/silk/')
